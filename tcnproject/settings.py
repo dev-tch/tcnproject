@@ -11,10 +11,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+from os import path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ============== < my custom my config > =============
+LOGIN_REDIRECT_URL = "tcn:home" 
+LOGOUT_REDIRECT_URL = "tcn:login"
+AUTH_USER_MODEL = 'tcn.CustomUser'
+STATIC_URL = "static/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -31,6 +36,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'tcn',  # Your app,
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +60,7 @@ ROOT_URLCONF = 'tcnproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [path.join(BASE_DIR, 'tcn/templates/tcn')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,8 +81,14 @@ WSGI_APPLICATION = 'tcnproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tcn_db',  # Replace with your database name
+        'USER': 'root',  # Replace with your database user
+        'PASSWORD': '',  # Replace with your database password
+        'HOST': 'localhost',  # Replace with your database host, e.g., 'localhost' or an IP address
+        'PORT': '3306',  # Replace with your database port (default is 3306)
     }
 }
 
