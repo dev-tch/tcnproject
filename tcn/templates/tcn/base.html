@@ -31,12 +31,91 @@ border-top-right-radius: .3rem;
 border-bottom-right-radius: .3rem;
 }
 }
-
+.logout-dropdown-item {
+        background-color: #d1c517;
+}
 </style>
 </head>
 {% load static %}
-<body id="bg" style="background-image: url('{% static "tcn/coming.jpg"%}')";>
-    <div class="container">
+<body id="bg" style="background-image: url('{% static "tcn/images/background.jpg"%}')";>
+    
+    <!-- start nav bar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'tcn:home' %}">home</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+           
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- start Menu client --> 
+                {% if user.is_authenticated and  user.role == 'client'%}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">show favorites</a>
+                </li>
+                {% endif %}
+                <!-- end Menu client -->
+    
+                <!-- start Menu Manger --> 
+                {% if user.is_authenticated and  user.role == 'manager'%}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'tcn:newOffice' %}">create office</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'tcn:listOffices' %}">view offices</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'tcn:newAgent' %}">create agent</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'tcn:listAgents' %}">view agents</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">track windows</a>
+                </li>
+                {% endif %}
+                <!-- end Menu Manger --> 
+    
+                <!-- start logout menu for all -->
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown ">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        logout {{ user.role }} 
+                    </a>
+                    <ul class="dropdown-menu logout-dropdown-item">
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider"></div>
+                        <div class="user-box">
+                            <div class="u-text">
+                              <h4>  {{ user.username }} </h4>
+                              <p class="text-muted">{{ user.email }}</p>
+                            </div>
+                        </div>
+                       <li><a id ='logout-link' class="dropdown-item link-danger" href="{% url 'tcn:logout' %}"  >logout</a></li>
+                        
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'tcn:login' %}">login</a>
+                </li>
+                {% endif %}
+                 <!-- end logout menu for all -->
+            </ul>
+            <!-- start Menu client --> 
+            {% if user.is_authenticated and  user.role == 'client'%}
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            {% endif %}
+            <!-- end Menu client --> 
+          </div>
+        </div>
+      </nav>
+    <!-- end nav bar -->
+    <div class="container mt-4">
         {% block content %}
         {% endblock %}
     </div>
@@ -48,5 +127,18 @@ border-bottom-right-radius: .3rem;
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
+    <!-- start when click logout form send post request via hidden form -->
+    <form id="logout-form" action="{% url 'tcn:logout' %}" method="post" style="display: none;">
+        {% csrf_token %}
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#logout-link').click(function(e) {
+                e.preventDefault();
+                $('#logout-form').submit();
+            });
+        });
+    </script>
+    <!-- end when click logout form send post request via hidden form -->
 </body>
 </html>

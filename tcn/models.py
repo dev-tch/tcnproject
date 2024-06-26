@@ -3,12 +3,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
-# Create your models here.
-USER_ROLES = (
-    ('client', 'Client'),
-    ('manager', 'Manager'),
-    ('agent', 'Agent'),
-)
 class Office(models.Model):
     ref = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=100)
@@ -22,9 +16,9 @@ class Office(models.Model):
         return self.name
     
 class CustomUser(AbstractUser):
-    USER_TYPE_CHOICES = [
-        ('client', 'Client'),
+    USER_ROLES = [
         ('manager', 'Manager'),
+        ('client', 'Client'),
         ('agent', 'Agent')
     ]
     role = models.CharField(max_length=10, choices=USER_ROLES, default='manager')

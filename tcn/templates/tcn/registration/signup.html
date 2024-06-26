@@ -3,77 +3,48 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<!--
-<h2>Sign up</h2>
-<form method="post">
-  {% csrf_token %}
- {{ form }} 
-  {{ form.as_p }}
-  <button type="submit">Sign Up</button>
-</form>
--->
+
 <!-- Section: Design Block -->
 <section class="background-radial-gradient overflow-hidden">
-    <style>
-      .background-radial-gradient {
-        background-color: hsl(218, 41%, 15%);
-        background-image: radial-gradient(650px circle at 0% 0%,
-            hsl(218, 41%, 35%) 15%,
-            hsl(218, 41%, 30%) 35%,
-            hsl(218, 41%, 20%) 75%,
-            hsl(218, 41%, 19%) 80%,
-            transparent 100%),
-          radial-gradient(1250px circle at 100% 100%,
-            hsl(218, 41%, 45%) 15%,
-            hsl(218, 41%, 30%) 35%,
-            hsl(218, 41%, 20%) 75%,
-            hsl(218, 41%, 19%) 80%,
-            transparent 100%);
-      }
-  
-      #radius-shape-1 {
-        height: 220px;
-        width: 220px;
-        top: -60px;
-        left: -130px;
-        background: radial-gradient(#44006b, #ad1fff);
-        overflow: hidden;
-      }
-  
-      #radius-shape-2 {
-        border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
-        bottom: -60px;
-        right: -110px;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(#44006b, #ad1fff);
-        overflow: hidden;
-      }
-  
-      .bg-glass {
-        background-color: hsla(0, 0%, 100%, 0.9) !important;
-        backdrop-filter: saturate(200%) blur(25px);
-      }
-    </style>
-  
+    {% load static %}
+    <link href="{% static 'tcn/css/form.css' %}" rel="stylesheet" />  
     <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+        {% if user.is_authenticated and  user.role == 'manager' %}
+        <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'tcn:home' %}'">
+            goback
+        </button>
+        {% else %}
         <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'tcn:login' %}'">
             Login
         </button>
+        {% endif %}
       <div class="row gx-lg-5 align-items-center mb-5">
         <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
-          <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
-            Sign Up <br />
-            <span style="color: hsl(218, 81%, 75%)">for TicketCounterNotify</span>
-          </h1>
-          <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
-            Welcome to TicketCounterNotify, your gateway to streamlined office management. 
-            Sign up today to harness superior service and efficiency. 
-            Our platform empowers managers with real-time insights into ticket counter operations, 
-            enabling them to monitor and optimize customer flow seamlessly.
-            Clients can conveniently track their ticket's status in real-time, 
-            ensuring transparency and satisfaction. Join us to elevate your office efficiency effortlessly
-          </p>
+            {% if user.is_authenticated and  user.role == 'manager' %}
+                <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+                manager interface
+                <br />
+                <span style="color: hsl(218, 81%, 75%)">
+                create new Agent
+                </span>
+                </h1>
+            {% else %}
+            <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+                Sign Up 
+                <br />
+                <span style="color: hsl(218, 81%, 75%)">
+                for TicketCounterNotify
+                </span>
+            </h1>
+            <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                Welcome to TicketCounterNotify, your gateway to streamlined office management. 
+                Sign up today to harness superior service and efficiency. 
+                Our platform empowers managers with real-time insights into ticket counter operations, 
+                enabling them to monitor and optimize customer flow seamlessly.
+                Clients can conveniently track their ticket's status in real-time, 
+                ensuring transparency and satisfaction. Join us to elevate your office efficiency effortlessly
+            </p>
+          {% endif %}
         </div>
   
         <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
@@ -125,10 +96,42 @@
                     <label for="{{ form.role.id_for_label }}" class="form-label">{{ form.role.label }}</label>
                     {{ form.role }}
                 </div>
+
+                <!-- start new agent fields by authenticated manager -->
+                {% if user.is_authenticated and  user.role == 'manager' %}
+                <div class="form-group">
+                    <label for="{{ form.national_id.id_for_label }}" class="form-label">{{ form.national_id.label }}</label>
+                    {{ form.national_id }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.office.id_for_label }}" class="form-label">{{ form.office.label }}</label>
+                    {{ form.office }}
+                </div>
+                {% endif %}
+                <!-- end new agent fields by authenticated manager -->
+
                 <!-- Submit button -->
+                <br/>
+                {% if user.is_authenticated and  user.role == 'manager' %}
                 <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">
-                  Sign up
+                create agent     
                 </button>
+                {% else %} 
+                <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">
+                    Sign up    
+                </button>
+                {% endif %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                    </div>
+                {% endif %}
               </form>
             </div>
           </div>

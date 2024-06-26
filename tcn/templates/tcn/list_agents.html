@@ -1,0 +1,35 @@
+{% extends "tcn/base.html" %}
+
+{% block title %}List Agents{% endblock %}
+
+{% block content %}
+<h1> {{ agent_list.count }} Agents were found </h1>
+<div class="d-flex justify-content-start align-items-start gap-3">
+    {% for agent in agent_list %}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">role : {{ agent.role}}</h5>
+            <p class="card-text">
+                information of office agent
+            </p>
+            </div>
+            <ul class="list-group list-group-flush">
+            <li class="list-group-item">username: {{ agent.username }}</li>
+            <li class="list-group-item">first name: {{ agent.first_name }}</li>
+            <li class="list-group-item">last name: {{ agent.last_name }}</li>
+            <li class="list-group-item">email: {{ agent.email }}</li>
+            <li class="list-group-item">national id {{ agent.national_id }}</li>
+            <li class="list-group-item">reference office  {{ agent.office_id }}</li>
+            </ul>
+            <div class="card-body">
+            {% if office.ref == 'guest' %}
+            <p class="text-danger font-weight-bold">change denied for default office!!</p>
+            {% else %}
+            <button type="button" class="btn btn-primary">update</button>
+            <button type="button" class="btn btn-danger">Delete</button>
+            {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

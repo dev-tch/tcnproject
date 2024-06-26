@@ -19,7 +19,7 @@ class CustomUserCreationForm(UserCreationForm):
        
         # Set role choices and configure widgets based on signup_url condition
         if self.request and self.request.path == signup_url:
-            self.fields['role'].choices = [('client', 'Client'), ('manager', 'Manager')]
+            self.fields['role'].choices = CustomUser.USER_ROLES[:2]
             self.fields['national_id'].widget = forms.HiddenInput()
             self.fields['office'].widget = forms.HiddenInput()
             self.fields['national_id'].required = False
@@ -32,7 +32,11 @@ class CustomUserCreationForm(UserCreationForm):
             self.fields['office'].required = True
         
         # Set queryset for office field
-        self.fields['office'].queryset = Office.objects.all()
+        if self.request.user.is_authenticated:
+            self.fields['office'].queryset = Office.objects.filter(users=self.request.user).exclude(ref='guest')
+        else:
+            self.fields['office'].queryset = Office.objects.filter(ref='guest')
+        # self.fields['office'].queryset = Office.objects.all()
 
     def clean_office(self):
         role = self.cleaned_data.get('role')
@@ -54,7 +58,7 @@ class CustomUserCreationForm(UserCreationForm):
             if request.user.role != 'manager':
                 raise forms.ValidationError("User must be a manager  to use Role agent")
 
-            user_office = Office.objects.filter(user=request.user).exclude(pk='guest').first()
+            user_office = Office.objects.filter(users=request.user).exclude(pk='guest').first()
             if not user_office:
                 raise forms.ValidationError("No offices associated with the authenticated manager user")
             return user_office
