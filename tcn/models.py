@@ -11,6 +11,7 @@ class Office(models.Model):
     region = models.CharField(max_length=100)
     address = models.CharField(max_length=1000)
     number_of_windows = models.IntegerField()
+    counter = models.IntegerField(default=0)  # New field
 
     def __str__(self):
         return self.name
