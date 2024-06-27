@@ -56,7 +56,7 @@ class Window(models.Model):
     number_window = models.IntegerField(primary_key=True)
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
     agent  = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    number_of_served_tickets = models.IntegerField()
+    number_of_served_tickets = models.IntegerField(default=0)  # Default value set to zero
     def save(self, *args, **kwargs):
         if self.number_window is not None and self.number_window > self.office.number_of_windows:
             raise ValidationError('number of windows not compatible with value already defined in office')
