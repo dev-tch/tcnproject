@@ -1,4 +1,5 @@
 #from django.contrib.auth.forms import UserCreationForm
+from django.db.models import F, Count, Case, When, IntegerField
 from .forms import CustomUserCreationForm
 from .manager_forms import OfficeCreationForm
 from django.urls import reverse_lazy
@@ -6,6 +7,13 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView
 from .models import Office, CustomUser
+# =================start  websocket
+from django.http import JsonResponse
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+# =================end   websocket
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 #class SignUpView(CreateView):
 class SignUpView(FormView):
@@ -76,6 +84,33 @@ class ListAgents(ListView):
         manager_office_id = manager_user.office_id  # Adjust this according to your actual field name
 
         # Filter agents linked to the manager's office
-        agents = CustomUser.objects.filter(role='agent', office_id=manager_office_id)
+        #agents = CustomUser.objects.filter(role='agent', office_id=manager_office_id)
+        agents = CustomUser.objects.filter(role='agent', office_id=manager_office_id).annotate(
+        agent_id=F('pk'),
+        number_of_windows=F('office__number_of_windows'),
+        num_window=Case(
+            When(window__agent_id=F('pk'), then=F('window__number_window')),
+            default=0,
+            output_field=IntegerField(),
+        )
+        ).order_by('pk')
         
         return agents
+
+counter = 0  # Example counter (should ideally be stored in a database)
+@csrf_exempt  # To bypass CSRF protection for this view
+@require_POST  # Ensures the view only responds to POST requests
+def increment_counter(request):
+    global counter
+    counter += 1
+
+    # Notify WebSocket clients about the counter update
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'counter_group',
+        {
+            'type': 'counter_update',
+            'counter': counter
+        }
+    )
+    return JsonResponse({'counter': counter})

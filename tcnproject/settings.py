@@ -21,6 +21,28 @@ LOGOUT_REDIRECT_URL = "tcn:login"
 AUTH_USER_MODEL = 'tcn.CustomUser'
 STATIC_URL = "static/"
 
+# ============== < start my custom my config ASGI  > =============
+# Django Channels configuration
+ASGI_APPLICATION = 'tcnproject.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.pubsub.RedisPubSubChannelLayer',
+        'CONFIG': {
+            'hosts': [('localhost', 6379)],  # Adjust host and port as necessary
+        },
+    },
+}
+# rest_framework settings 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+# post axios 
+#CSRF_COOKIE_NAME = "XSRF-TOKEN"
+
+# ============== < end my custom my config ASGI  > =============
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -37,6 +59,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'tcn',  # Your app,
+    'channels', 
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
