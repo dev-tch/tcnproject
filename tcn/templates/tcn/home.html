@@ -1,11 +1,127 @@
 {% extends "tcn/base.html" %}
-
 {% block title %}Home{% endblock %}
-
 {% block content %}
-<h1>Welcome to the Home Page</h1>
-<p>This is the content of the home page.</p>
-<button onclick="incrementCounter()">Increment Counter</button>
-<h1 id = "counter-display1" style="background-color:powderblue;">This is a heading</h1>
-<p id ="counter-display" style="background-color:tomato;">This is a paragraph.</p>
+{% if not user.is_authenticated %}
+    <h1>Welcome to TicketCounterNotify please login or signup</h1>
+{% endif %}
+
+{% if user.is_authenticated and user.role == 'agent' %}
+    <!-- 
+    ======================================================================
+    start Dynamic oontent for user agent 
+    ======================================================================
+    -->
+    <p class="text-success bg-dark text-center">
+        Congratulations, agent! You have successfully joined TicketCounterNotify. 
+    </p>
+    
+    <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <button 
+            data-agent-id   = "{{ agent_user.id}}"
+            data-office-id  = "{{ agent_office.ref }}"
+            data-window-num = "{{ agent_window.number_window }}"
+            onclick="incrementCounter(this)">Increment Counter
+            </button>
+          </div>
+          <div class="col-sm">
+            <h1 id = "counter-display-agent" style="background-color:powderblue; text-align: center;">{{agent_office.counter}}</h1>
+          </div>
+        </div>
+    </div>
+
+    <!-- 
+    ======================================================================
+    End Dynamic content for user agent 
+    ======================================================================
+    -->
+{% endif %}
+
+
+{% if user.is_authenticated and user.role == 'client' %}
+    <!-- 
+    ======================================================================
+    start Dynamic  content for user client
+    ======================================================================
+    -->
+    <p class="text-success bg-dark text-center">
+        Congratulations, client! You have successfully joined TicketCounterNotify.
+    </p>
+    <!-- start datatable -->
+    <table id="offices" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>State</th>
+                <th>Region</th>
+                <th>Address</th>
+                <th>Counter</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for office in offices %}
+            <tr>
+                <td>{{ office.ref }}</td>
+                <td>{{ office.name }}</td>
+                <td>{{ office.country }}</td>
+                <td>{{ office.state }}</td>
+                <td>{{ office.region }}</td>
+                <td>{{ office.address }}</td>
+                <td>{{ office.counter }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Reference</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>State</th>
+                <th>Address</th>
+                <th>Counter</th>
+            </tr>
+        </tfoot>
+    </table>
+    <!-- end datatable -->
+    <!-- 
+    ======================================================================
+    End Dynamic  content for user client
+    ======================================================================
+    -->
+{% endif %}
+{% if user.is_authenticated and user.role == 'manager' %}
+    <!-- 
+    ======================================================================
+    Start Dynamic content for user manager
+    ======================================================================
+    -->
+    <p class="text-success bg-dark text-center">
+        Congratulations, manager! You have successfully joined TicketCounterNotify. 
+    </p>
+    <!-- 
+    ======================================================================
+    end  Dynamic for user manager 
+    ======================================================================
+    -->
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+    {% if user.is_authenticated and user.role == 'client' %}
+    <!-- 
+    ======================================================================
+    start javscript  for user client
+    ======================================================================
+    -->
+        <script>$('#offices').DataTable();</script>
+    {% endif %}
+    <!-- 
+    ======================================================================
+    end javscript  for user client
+    ======================================================================
+    -->
 {% endblock %}

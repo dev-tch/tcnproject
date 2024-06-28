@@ -6,15 +6,10 @@ from django.urls import reverse_lazy
 #from django.views.generic import CreateView
 from django.views.generic.edit import FormView
 from django.views.generic import ListView
-from .models import Office, CustomUser
-# =================start  websocket
-from django.http import JsonResponse
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-# =================end   websocket
+from .models import Office, CustomUser, Window
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
+from django.shortcuts import render
 #class SignUpView(CreateView):
 class SignUpView(FormView):
     #form_class = UserCreationForm
@@ -96,21 +91,26 @@ class ListAgents(ListView):
         ).order_by('pk')
         
         return agents
-
-counter = 0  # Example counter (should ideally be stored in a database)
-@csrf_exempt  # To bypass CSRF protection for this view
-@require_POST  # Ensures the view only responds to POST requests
-def increment_counter(request):
-    global counter
-    counter += 1
-
-    # Notify WebSocket clients about the counter update
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        'counter_group',
-        {
-            'type': 'counter_update',
-            'counter': counter
-        }
-    )
-    return JsonResponse({'counter': counter})
+    
+def index(request):
+    agent_user = None
+    agent_window = None
+    agent_office = None
+    customuser = request.user
+    context = {}
+    offices = {}
+    if hasattr(customuser, 'role') and customuser.role == 'manager':
+        # we need office_id to track windows
+        manager_user = Office.objects.filter(users=customuser).exclude(ref='guest').first()
+        pass  
+    elif hasattr(customuser, 'role') and  customuser.role == 'agent':
+        # we need agent_id and office_id for service counter 
+        agent_office = Office.objects.filter(users=customuser).exclude(ref='guest').first()
+        agent_window = Window.objects.filter(agent_id=customuser.id, office_id=agent_office.ref).first()
+        agent_user = CustomUser.objects.filter(pk=customuser.id).first()
+        pass
+    elif hasattr(customuser, 'role') and  customuser.role == 'client':
+        offices = Office.objects.all().exclude(ref='guest')
+    context = {"agent_user": agent_user, "agent_office": agent_office, "agent_window": agent_window,
+               "offices": offices}
+    return render(request, "tcn/home.html", context)

@@ -19,7 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 LOGIN_REDIRECT_URL = "tcn:home" 
 LOGOUT_REDIRECT_URL = "tcn:login"
 AUTH_USER_MODEL = 'tcn.CustomUser'
-STATIC_URL = "static/"
 
 # ============== < start my custom my config ASGI  > =============
 # Django Channels configuration
@@ -67,10 +66,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+     'whitenoise.runserver_nostatic',  #for config whitenose 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+     "whitenoise.middleware.WhiteNoiseMiddleware",  #for config whitenose 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -152,7 +153,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = path.join(BASE_DIR, 'static') # for config whitenose
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage" # for config whitenose
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

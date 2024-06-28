@@ -4,11 +4,18 @@ axios.defaults.xsrfCookieName = 'csrftoken';
 let dialog_assign_window = null;
 
 // service1: increment counter user by agen
-function incrementCounter() {
-    axios.post("{% url 'tcn:increment_counter'%}", { csrfmiddlewaretoken: '{{ csrf_token }}'})
+function incrementCounter(button) {
+    const postData = {
+        agent_id: button.getAttribute('data-agent-id'),
+        number_window: button.getAttribute('data-window-num')
+    }
+    
+    const refOffice = button.getAttribute('data-office-id');
+    const url = `/tcn/api/offices/${refOffice}/increment-counter/`;
+    axios.post(url , postData)
         .then(function (response) {
             // Handle success, update UI with new counter value
-            document.getElementById('counter-display').innerText = response.data.counter;
+            document.getElementById('counter-display-agent').innerText = response.data.counter;
         })
         .catch(function (error) {
             // Handle error
