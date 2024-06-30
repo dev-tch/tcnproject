@@ -1,5 +1,5 @@
 #from django.contrib.auth.forms import UserCreationForm
-from django.db.models import F, Count, Case, When, IntegerField
+from django.db.models import F, Case, When, IntegerField
 from .forms import CustomUserCreationForm
 from .manager_forms import OfficeCreationForm
 from django.urls import reverse_lazy
@@ -7,9 +7,9 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView
 from .models import Office, CustomUser, Window
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from django.shortcuts import render
+
+
 #class SignUpView(CreateView):
 class SignUpView(FormView):
     #form_class = UserCreationForm
@@ -32,16 +32,7 @@ class CreateOfficeView(FormView):
     form_class = OfficeCreationForm
     success_url = reverse_lazy("tcn:home")
     template_name = "tcn/create_office.html"
-    """
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-    """
     def form_valid(self, form):
         # override the manager office
         # when signup manager acces with default office 
@@ -93,16 +84,21 @@ class ListAgents(ListView):
         return agents
     
 def index(request):
+    # data context for agent interaface
     agent_user = None
     agent_window = None
     agent_office = None
+    # data context for client  interaface
+    offices = {}
+    # data context for manager  interaface
+    windows_office = {}
+    # common variables 
     customuser = request.user
     context = {}
-    offices = {}
     if hasattr(customuser, 'role') and customuser.role == 'manager':
         # we need office_id to track windows
-        manager_user = Office.objects.filter(users=customuser).exclude(ref='guest').first()
-        pass  
+        office_manager = Office.objects.filter(users=customuser).exclude(ref='guest').first()
+        windows_office = Window.objects.filter(office_id=office_manager.ref)
     elif hasattr(customuser, 'role') and  customuser.role == 'agent':
         # we need agent_id and office_id for service counter 
         agent_office = Office.objects.filter(users=customuser).exclude(ref='guest').first()
@@ -111,28 +107,20 @@ def index(request):
         pass
     elif hasattr(customuser, 'role') and  customuser.role == 'client':
         offices = Office.objects.all().exclude(ref='guest')
-    context = {"agent_user": agent_user, "agent_office": agent_office, "agent_window": agent_window,
-               "offices": offices}
+    context = {"agent_user": agent_user,
+               "agent_office": agent_office,
+               "agent_window": agent_window,
+               "offices": offices,
+               "windows_office": windows_office}
     return render(request, "tcn/home.html", context)
 
 class ListTrackedOffices(ListView):
     model = Office
     template_name = "tcn/list_offices_tracked.html"
     context_object_name = "list_tracked_offices"
+
     def get_queryset(self):
         """Return the last five published questions."""
         client_user = self.request.user
-        print("im here")
-        # Filter agents linked to the manager's office
-        #agents = CustomUser.objects.filter(role='agent', office_id=manager_office_id)
         offices = Office.objects.filter(counter_notifications__client=client_user, counter_notifications__is_enabled=True).exclude(ref='guest')
-        for office in offices:
-            print(office.name)
-            print(office.ref)
         return offices
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Debug: Print the context data
-        print("Context Data:", context)
-        return context
-    

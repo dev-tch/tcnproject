@@ -142,6 +142,25 @@
     <p class="text-success bg-dark text-center">
         Congratulations, manager! You have successfully joined TicketCounterNotify. 
     </p>
+    <h1>{{ windows_office.count }}  windows were found </h1>
+    <div class="d-flex justify-content-start align-items-start gap-3">
+        {% for window in windows_office %}
+        <div class="card" style="width: 25rem">
+            <div class="card-body">
+                <p class="display-3 text-primary d-block text-center border border-primary "
+                id="served-tickets{{window.number_window}}"
+                >
+                {{window.number_of_served_tickets}} tickets 
+                </p>
+                <h2 class="card-title" style="font-size:1.8em;">
+                    number window : <span id="number-window{{window.number_window}}">{{window.number_window}}</span>
+                </h2>
+                <p class="h5 text-gray" id="agent-window{{window.number_window}}">Agent ID : {{window.agent_id}}</p>
+                <p class="h5 text-gray" id="office-window{{window.number_window}}">Office Reference : {{window.office_id}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
     <!-- 
     ======================================================================
     end  Dynamic for user manager 
