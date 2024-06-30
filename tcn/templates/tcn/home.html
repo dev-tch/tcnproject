@@ -48,6 +48,11 @@
     <p class="text-success bg-dark text-center">
         Congratulations, client! You have successfully joined TicketCounterNotify.
     </p>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dialog-enable-notifications"
+    id ="btn-track-offices"
+    >
+    track offices 
+    </button>
     <!-- start datatable -->
     <table id="offices" class="table table-striped" style="width:100%">
         <thead>
@@ -72,6 +77,7 @@
                 <td>{{ office.address }}</td>
                 <td>{{ office.counter }}</td>
             </tr>
+            </label>
             {% endfor %}
         </tbody>
         <tfoot>
@@ -86,6 +92,36 @@
         </tfoot>
     </table>
     <!-- end datatable -->
+     <!-- start  MODAL DIALOG-->
+ <!-- Modal -->
+    <div class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" id="dialog-enable-notifications">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel"> enable/disable notifications of these offices</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!--<p id="dialog_list_offices"></p>--> 
+            <div class="mb-3">
+                <label for="text-area-array-offices" class="form-label">List of references, separated by commas(,)</label>
+                <textarea class="form-control" id="text-area-array-offices" rows="3"></textarea>
+            </div>
+            <p id="response_action_notifify">response action</p>
+        </div>
+        <div class="d-flex flex-row mb-3 modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-close-dialog-notify">Close</button>
+            <button type="button" class="btn btn-primary ms-2" id="btn-enable-notify"
+            data-client-id="{{ user.id}}"
+            >Enable </button>
+            <button type="button" class="btn btn-primary " id="btn-disable-notify"
+            data-client-id="{{ user.id}}"
+            >Disable</button>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- end MODAL DIALOG -->
     <!-- 
     ======================================================================
     End Dynamic  content for user client
@@ -118,6 +154,81 @@
     ======================================================================
     -->
         <script>$('#offices').DataTable();</script>
+        <script>
+            $(document).ready(function(){
+                let selectedOffices = [];
+                let arrayOfficesToSend = []; 
+                let msg_response = ""
+                $("table tbody tr").click(function(){
+                    $(this).toggleClass("selected");
+                    const officeRef = $(this).children(":first").text();
+                    if ($(this).hasClass("selected")) {
+                        selectedOffices.push(officeRef)
+                    } else {
+                        selectedOffices =selectedOffices.filter(function(ref) {
+                            return ref !== officeRef;
+                        })  
+                    }
+                });
+                $("#btn-track-offices").click(function(){
+                    // clear contents of text area and paragraph tags 
+                    $("#text-area-array-offices").val('')
+                    $("#response_action_notifify").text('')
+                    // clear arrayOfficesToSend
+                    arrayOfficesToSend = []
+                    selectedOffices.forEach((element, index, array) => {
+                        if (index === array.length - 1)
+                        {
+                            $("#text-area-array-offices").val(function(i, text) {
+                                return text + element;
+                            });
+                        }
+                        else {
+                            $("#text-area-array-offices").val(function(i, text) {
+                                return text + element + ', ';
+                            });
+                        }
+                        
+                    });
+                    
+                });
+                // click enable notification for selected offices 
+                $( "#btn-enable-notify,#btn-disable-notify").on( "click", function() {
+                    const response_element = $("#response_action_notifify");
+                    response_element.text('');
+                    let textAreaContentArray = $("#text-area-array-offices").val();
+                    textAreaContentArray =  textAreaContentArray.trim();
+                    if (typeof textAreaContentArray === "string" && textAreaContentArray.length === 0) {
+                        msg_response = "empty text area : No offices were selected"
+                        styleResponseTag(response_element,'text-success', 'text-danger', msg_response);
+                        return ;
+                    }
+                    arrayOfficesToSend =  textAreaContentArray.split(',');
+                    if (Array.isArray(arrayOfficesToSend)) {
+                        if (arrayOfficesToSend.length === 0) {
+                            msg_response = "no offices selectetd"
+                            styleResponseTag(response_element,'text-success', 'text-danger', msg_response);
+                            return;
+                        }
+
+                        console.log("offices to send:")
+                        console.log(JSON.stringify(arrayOfficesToSend))
+                        let action = '';
+                        if (this.id === 'btn-enable-notify') {
+                            action = 'enable';
+                        } else if (this.id === 'btn-disable-notify') {
+                            action = 'disable';
+                        }
+                        apply_notification_with_action(this, action, arrayOfficesToSend, response_element);
+                        // call the service the service 
+                    } else {
+                        msg_response = "selectedOffices is not an array";
+                        styleResponseTag(response_element,'text-success', 'text-danger', msg_response);
+                        return;
+                    }
+                } );
+            });
+        </script>
     {% endif %}
     <!-- 
     ======================================================================

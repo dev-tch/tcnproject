@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.db.models import UniqueConstraint
 
 class Office(models.Model):
     ref = models.CharField(max_length=255, primary_key=True)
@@ -64,3 +65,16 @@ class Window(models.Model):
 
     def __str__(self):
         return f'Window {self.id} at {self.office.name} assigned to {self.agent.username}'
+    
+# new model to track office for client 
+
+class CounterNotify(models.Model):
+    is_enabled = models.BooleanField(default=False)
+    office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name='counter_notifications')
+    client = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='counter_notifications')
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['client', 'office'], name='unique_client_office')
+        ]
+    def __str__(self):
+        return f"CounterNotify: {self.client.username} - {self.office.name}"

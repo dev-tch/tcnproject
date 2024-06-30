@@ -52,9 +52,46 @@ function assignAgentToWindow(button) {
             console.error('Error assignAgentToWindow:', error);
         });
 }
+
+// service 3 : apply action (enable or disable ) to recieve notification from selected notifications 
+function apply_notification_with_action(buttonActionNotify, action, selectedOffices, responseElement) {
+    // api to consume 'api/offices/<int:id_user>/<str:action>/apply'
+    if (buttonActionNotify !== undefined && buttonActionNotify !== null)
+    {
+        const idUser =  buttonActionNotify.getAttribute('data-client-id')
+        console.log(idUser)
+        console.log(action)
+        const postData = {
+            ref_offices: selectedOffices,
+        }
+        const url = `/tcn/api/offices/${idUser}/${action}/apply`;
+        axios.post(url , postData)
+        .then(function (response) {
+            styleResponseTag(responseElement, feedback.error, feedback.success , response.data.message);
+        })
+        .catch(function (error) {
+            styleResponseTag(responseElement, feedback.success, feedback.error , error.response.data.error);
+            console.error('Error apply_notification_with_action:', error);
+        });
+    }
+}
+
 //helper function to clear the response server in <p> tag 
 function clearOldData(){
     if (dialog_assign_window) {
         dialog_assign_window.innerText = "";
     }
+}
+// helper function 
+function styleResponseTag(htmlElement, nameClassToRemove, nameClassToAdd, stringContent)
+{
+    if (htmlElement !== undefined && htmlElement !== null)
+    {   htmlElement.removeClass(nameClassToRemove)
+        htmlElement.addClass(nameClassToAdd)
+        htmlElement.html(stringContent);
+    }
+}
+const feedback = {
+    success: 'text-success',
+    error : 'text-danger'
 }
