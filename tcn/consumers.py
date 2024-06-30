@@ -10,6 +10,9 @@ class CounterConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard('counter_group', self.channel_name)
 
     async def counter_update(self, event):
+        counter = event['counter']
+        ref_office = event['ref_office']
         await self.send(text_data=json.dumps({
-            'counter': event['counter']
+            'counter': counter,
+            'ref_office': ref_office
         }))

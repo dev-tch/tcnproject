@@ -10,7 +10,6 @@
     <link rel="stylesheet" type="text/css" href="{% static "tcn/css/base.css"%}" />
     {% block extra_head %}{% endblock %}
 </head>
-{% load static %}
 <body id="bg" style="background-image: url('{% static "tcn/images/background.jpg"%}')";>
     <!-- start nav bar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -105,13 +104,6 @@
     <form id="logout-form" action="{% url 'tcn:logout' %}" method="post" style="display: none;">
         {% csrf_token %}
     </form>
-     {% load static %}
-    <!-- start include websocket.js -->
-    {% if user.is_authenticated and user.role == 'client' %}
-    <script src="{% static "tcn/js/websocket.js"%}"></script>
-    {% endif %}
-    <!-- start include websocket.js -->
-
     <!-- start include rest_services.js -->
     {% if user.is_authenticated %}
         <script src="{% static "tcn/js/rest_services.js"%}"></script>
