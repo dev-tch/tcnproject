@@ -8,6 +8,7 @@
     <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static "tcn/css/base.css"%}" />
+    {% block extra_head %}{% endblock %}
 </head>
 {% load static %}
 <body id="bg" style="background-image: url('{% static "tcn/images/background.jpg"%}')";>
@@ -24,7 +25,9 @@
                 <!-- start Menu client --> 
                 {% if user.is_authenticated and  user.role == 'client'%}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">show favorites</a>
+                    <a class="nav-link active" aria-current="page" href="{% url 'tcn:listTrackedOffices' %}">
+                        Tracked office counters
+                    </a>
                 </li>
                 {% endif %}
                 <!-- end Menu client -->

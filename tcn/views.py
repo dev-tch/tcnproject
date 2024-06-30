@@ -114,3 +114,25 @@ def index(request):
     context = {"agent_user": agent_user, "agent_office": agent_office, "agent_window": agent_window,
                "offices": offices}
     return render(request, "tcn/home.html", context)
+
+class ListTrackedOffices(ListView):
+    model = Office
+    template_name = "tcn/list_offices_tracked.html"
+    context_object_name = "list_tracked_offices"
+    def get_queryset(self):
+        """Return the last five published questions."""
+        client_user = self.request.user
+        print("im here")
+        # Filter agents linked to the manager's office
+        #agents = CustomUser.objects.filter(role='agent', office_id=manager_office_id)
+        offices = Office.objects.filter(counter_notifications__client=client_user, counter_notifications__is_enabled=True).exclude(ref='guest')
+        for office in offices:
+            print(office.name)
+            print(office.ref)
+        return offices
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Debug: Print the context data
+        print("Context Data:", context)
+        return context
+    

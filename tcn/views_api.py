@@ -78,7 +78,8 @@ def increment_counter(request, ref_office):
             'counter_group',
             {
                 'type': 'counter_update',
-                'counter': office.counter
+                'counter': office.counter,
+                'ref_office': office.ref
             }
         )
     #exceptions = (Office.DoesNotExist, CustomUser.DoesNotExist, Window.DoesNotExist)
