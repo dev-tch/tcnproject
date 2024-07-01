@@ -5,3 +5,10 @@ class OfficeCreationForm(forms.ModelForm):
     class Meta:
         model = Office
         fields = ['ref', 'name', 'country', 'state', 'region', 'address' , 'number_of_windows']
+
+class OfficeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Office
+        fields = ['name', 'country', 'state', 'region', 'address' , 'number_of_windows']
+
+

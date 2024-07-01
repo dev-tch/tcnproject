@@ -1,14 +1,14 @@
 #from django.contrib.auth.forms import UserCreationForm
 from django.db.models import F, Case, When, IntegerField
 from .forms import CustomUserCreationForm
-from .manager_forms import OfficeCreationForm
+from .manager_forms import OfficeCreationForm, OfficeUpdateForm
 from django.urls import reverse_lazy
 #from django.views.generic import CreateView
 from django.views.generic.edit import FormView
 from django.views.generic import ListView
 from .models import Office, CustomUser, Window
 from django.shortcuts import render
-
+from django.shortcuts import get_object_or_404
 
 #class SignUpView(CreateView):
 class SignUpView(FormView):
@@ -47,6 +47,8 @@ class CreateOfficeView(FormView):
             user.office_id = office_instance.ref
             user.save()
         return super().form_valid(form)
+    def get_success_url(self):
+        return reverse_lazy('tcn:listOffices')
     
 class ListOffices(ListView):
     model = Office
@@ -124,3 +126,45 @@ class ListTrackedOffices(ListView):
         client_user = self.request.user
         offices = Office.objects.filter(counter_notifications__client=client_user, counter_notifications__is_enabled=True).exclude(ref='guest')
         return offices
+
+## update office module
+class UpdateOfficeView(FormView):
+    #form_class = UserCreationForm
+    form_class = OfficeUpdateForm
+    success_url = reverse_lazy("tcn:home")
+    template_name = "tcn/update_office.html"
+
+    def get_office_to_update(self):
+        # access parameters 'ref_office' included in the URL
+        ref_office = self.kwargs.get('ref_office')
+        return get_object_or_404(Office, ref=ref_office)
+    
+    def get_initial(self):
+        # get the initial object form
+        initial = super().get_initial()
+        # init the form from database based on ref_office
+        office_instance = self.get_office_to_update()
+        initial.update({
+            'name': office_instance.name,
+            'country': office_instance.country,
+            'state': office_instance.state,
+            'region': office_instance.region,
+            'address': office_instance.address,
+            'number_of_windows': office_instance.number_of_windows,
+        })
+        return initial
+
+    def form_valid(self, form):
+        office_to_update = self.get_office_to_update()
+        office_to_update.name = form.cleaned_data['name']
+        office_to_update.country = form.cleaned_data['country']
+        office_to_update.state = form.cleaned_data['state']
+        office_to_update.region = form.cleaned_data['region']
+        office_to_update.address = form.cleaned_data['address']
+        office_to_update.number_of_windows = form.cleaned_data['number_of_windows']
+        office_to_update.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('tcn:listOffices')
+  

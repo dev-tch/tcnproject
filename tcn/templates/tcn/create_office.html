@@ -10,7 +10,7 @@
     <link href="{% static 'tcn/css/form.css' %}" rel="stylesheet" />  
     <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
         {% if user.is_authenticated and  user.role == 'manager' %}
-        <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'tcn:home' %}'">
+        <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'tcn:listOffices' %}'">
             goback
         </button>
         {% else %}

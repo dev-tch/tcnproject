@@ -15,6 +15,8 @@ urlpatterns = [
     path("manager/offices/", views.ListOffices.as_view(), name="listOffices"),
     path("manager/agents/", views.ListAgents.as_view(), name="listAgents"),
     path("client/trackedOffices/", views.ListTrackedOffices.as_view(), name='listTrackedOffices'),
+    path('manager/offices/<str:ref_office>/update/', views.UpdateOfficeView.as_view(), name='updateOfficeForm')
+   ,
     # api section 
     path('api/status/', views_api.status, name='apiStatus'),
     path('api/windows/<int:number_window>/assign-agent/', views_api.assign_agent_to_window, name='apiWindowAssignAgent'),

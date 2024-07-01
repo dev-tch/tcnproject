@@ -3,7 +3,9 @@
 {% block title %}List Offices{% endblock %}
 
 {% block content %}
-<h1> {{ office_list.count }} Offices were found </h1>
+
+<h1 class="text-info bg-dark" >Each logged-in manager is allowed to create one office!!</h1>
+<h2> {{ office_list.count }} Offices were found </h2>
 <div class="d-flex justify-content-start align-items-start gap-3">
     {% for office in office_list %}
         <div class="card" style="width: 18rem;">
@@ -29,11 +31,27 @@
             {% if office.ref == 'guest' %}
             <p class="text-danger font-weight-bold">change denied for default office!!</p>
             {% else %}
-            <button type="button" class="btn btn-primary">update</button>
+            <button type="button" class="btn btn-primary" onclick="updateOffice(this)"
+            data-ref-office="{{ office.ref}}"
+            >
+                update
+            </button>
             <button type="button" class="btn btn-danger">Delete</button>
             {% endif %}
             </div>
         </div>
     {% endfor %}
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    function updateOffice(buttonUpdateOffice) {
+        if (buttonUpdateOffice !== undefined && buttonUpdateOffice !== null) {
+            const ref_office = buttonUpdateOffice.getAttribute('data-ref-office');
+            const updateUrl = `/tcn/manager/offices/${ref_office}/update/`;
+            // Redirect to the update URL directly
+            window.location.href = updateUrl;
+        }
+    }
+</script>
 {% endblock %}
