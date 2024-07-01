@@ -111,6 +111,13 @@ def apply_notify_with_action(request, id_user, action):
 
     if not action in ['enable', 'disable']:
         return Response({"error": "action must be  in [enable, disable] "}, status=restHttpCodes.HTTP_400_BAD_REQUEST)
+    # Authorization Fix 1 : id_user must the same as user connected with role client 
+    if request.user.id != id_user:
+        return Response({"error": "You are not authorized to perform this action."}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    if request.user.role != 'client':
+        return Response({"error": "You do not have permission to perform this action."}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
     is_enabled  = True if action == "enable" else False
     # if check data requit is valid we start the process 
     offices = Office.objects.filter(ref__in=ref_offices)
