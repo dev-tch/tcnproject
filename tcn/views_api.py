@@ -25,13 +25,19 @@ def assign_agent_to_window(request, number_window):
     office_id = request.data.get('office_id')
     if not agent_id or not office_id:
         return Response({"error": "agent_id and office_id are required"}, status=restHttpCodes.HTTP_400_BAD_REQUEST)
-
     try:
         agent_id = int(agent_id)
     except ValueError:
         return Response({"error": "agent_id must be integer"},
                         status=status.HTTP_400_BAD_REQUEST)
-    # delete agent  from others windows
+    # check authorization 
+    # Verify that the office_id in the data request sent by the Axios call matches the office_id of the connected user
+    if request.user.office_id != office_id:
+         return Response({"error": "office_id does not match the office_id of the connected user"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    # Ensure the user has the role "manager"
+    if request.user.role != 'manager':
+        return Response({"error": "Only managers can perform this action"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
     try:
         with transaction.atomic():  # Ensure transactional integrity
             Window.objects.filter(agent_id=agent_id).delete()
