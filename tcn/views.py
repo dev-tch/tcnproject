@@ -9,6 +9,7 @@ from django.views.generic import ListView
 from .models import Office, CustomUser, Window
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
 
 #class SignUpView(CreateView):
 class SignUpView(FormView):
@@ -133,6 +134,15 @@ class UpdateOfficeView(FormView):
     form_class = OfficeUpdateForm
     success_url = reverse_lazy("tcn:home")
     template_name = "tcn/update_office.html"
+
+    # check authorization method 
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the connected user is a manager and if their office matches the 'ref_office' parameter
+        office_instance = self.get_office_to_update()
+        
+        if not (request.user.role == 'manager' and request.user.office_id == office_instance.ref):
+            raise PermissionDenied("You are not authorized to update this office.")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_office_to_update(self):
         # access parameters 'ref_office' included in the URL
