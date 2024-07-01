@@ -157,3 +157,35 @@ def apply_notify_with_action(request, id_user, action):
     if action == "disable":
         json_data = {"message": "disable notifications for offices applied successfully"}
     return Response(json_data, status=restHttpCodes.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def deleteOffice(request, ref_office):
+    "check data "
+    if not ref_office:
+        return Response({"error": "No ref_office provided"}, status=restHttpCodes.HTTP_400_BAD_REQUEST)
+
+    # check authorization of deletion 
+    # Verify that the office of the connected user matches the ref_office parameter sent by the Axios call
+    if request.user.office_id != ref_office:
+        return Response({"error": "ref_office does not match the ref_office of the connected user"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    # Ensure the user has the role "manager"
+    if request.user.role != 'manager':
+        return Response({"error": "Only managers can perform this action"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    try:
+        office = Office.objects.get(pk=ref_office)
+        # we detect problem if we delete office the account of manager was deleted
+        # we must reassign manager account to office guest 
+        guest_office, _ = Office.objects.get_or_create(ref='guest')
+        CustomUser.objects.filter(office=office).update(office=guest_office)
+        office.delete()
+        office.save()
+    except Office.DoesNotExist:  
+        return Response({"error": f"office {ref_office} not found"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
+    except Exception as e:  
+        return Response({"error": str(e)}, status=restHttpCodes.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    json_data = {"message": "office was deleted successfully"}
+    return Response(json_data, status=restHttpCodes.HTTP_200_OK)

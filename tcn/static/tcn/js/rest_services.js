@@ -76,6 +76,29 @@ function apply_notification_with_action(buttonActionNotify, action, selectedOffi
     }
 }
 
+// delete office 
+function deleteOffice(buttonConfirmDeleteOffice) {
+    if (buttonConfirmDeleteOffice !== undefined && buttonConfirmDeleteOffice !== null)
+    {
+        const ref_office =  buttonConfirmDeleteOffice.getAttribute('data-office-ref')
+        const responseElement = $(`#response-delete-office${ref_office}`)
+        const url = `/tcn/api/offices/${ref_office}/delete`;
+        axios.delete(url)
+        .then(function (response) {
+            
+            if (responseElement !== undefined && responseElement !== null) {
+                styleResponseTag(responseElement, feedback.error, feedback.success , response.data.message);
+            }
+            
+        })
+        .catch(function (error) {
+            if (responseElement !== undefined && responseElement !== null) {
+                styleResponseTag(responseElement, feedback.success, feedback.error , error.response.data.error);
+            }
+            console.error('Error deleteOffice:', error);
+        });
+    }
+}
 //helper function to clear the response server in <p> tag 
 function clearOldData(){
     if (dialog_assign_window) {
@@ -95,3 +118,4 @@ const feedback = {
     success: 'text-success',
     error : 'text-danger'
 }
+

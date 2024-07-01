@@ -36,10 +36,38 @@
             >
                 update
             </button>
-            <button type="button" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteOffice{{ office.ref }}">Delete</button>
             {% endif %}
             </div>
         </div>
+        <!-- start Modal delete Office -->
+         <!-- Modal -->
+        <div class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        id="deleteOffice{{ office.ref }}"
+        >
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Do you confirm the deletion of this office ?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>  Office Reference:  {{ office.ref }} </p>
+                    <p id="response-delete-office{{ office.ref }}"></p>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary"
+                data-office-ref="{{ office.ref }}"
+                onclick="deleteOffice(this)"
+                >
+                Yes
+                </button>
+                </div>
+            </div>
+            </div>
+        </div>
+        <!--end delete office -->
     {% endfor %}
 </div>
 {% endblock %}
