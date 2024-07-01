@@ -52,16 +52,31 @@ def assign_agent_to_window(request, number_window):
 # agent api increment counter 
 @api_view(['POST'])
 def increment_counter(request, ref_office):
-    # control fields 
-    if not ref_office:
-        return Response({"error": "ref_office is required"},
-                        status=restHttpCodes.HTTP_400_BAD_REQUEST)
-    # get agent_id and number_window from body request 
+    # control data sent by axios  call  
     agent_id = request.data.get('agent_id')
     number_window = request.data.get('number_window')
-    if not agent_id or not number_window:
-        return Response({"error": "agent_id and number_window are required"}, status=restHttpCodes.HTTP_400_BAD_REQUEST)
-    # get the  office instanse 
+    if not agent_id or not number_window or not ref_office:
+        return Response({"error": "ref_office, agent_id and number_window are required"}, status=restHttpCodes.HTTP_400_BAD_REQUEST)
+    # Control Validity of Data Types
+    try:
+        agent_id =  int(agent_id)
+        number_window =  int(number_window)
+    except ValueError:
+        return Response({"error": "agent_id and number_window must be integers"}, status=restHttpCodes.HTTP_400_BAD_REQUEST)
+    
+    # Verify that the office of the connected user matches the ref_office parameter sent by the Axios call
+    if request.user.office_id != ref_office:
+        return Response({"error": "ref_office does not match the ref_office of the connected user"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    # Verify that the agent_id in the data request sent by the Axios call matches the id of the connected user
+    if request.user.id != agent_id:
+        return Response({"error": "You are not authorized to perform this action"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    # Ensure the user has the role "agent"
+    if request.user.role != 'agent':
+        return Response({"error": "Only agents can perform this action"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+   
+    # Check the existence of instances (office, agent, window)
     try: 
         office = Office.objects.get(pk=ref_office)
         agent  = CustomUser.objects.get(pk=agent_id)
