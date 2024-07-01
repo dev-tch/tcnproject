@@ -34,6 +34,13 @@ class CreateOfficeView(FormView):
     success_url = reverse_lazy("tcn:home")
     template_name = "tcn/create_office.html"
 
+    # add check authorization check 
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the user is authenticated and is a manager
+        if not (request.user.is_authenticated and request.user.role == 'manager'):
+            raise PermissionDenied("Only managers can create offices.")
+        return super().dispatch(request, *args, **kwargs)
+    
     def form_valid(self, form):
         # override the manager office
         # when signup manager acces with default office 
@@ -100,7 +107,9 @@ def index(request):
     context = {}
     if hasattr(customuser, 'role') and customuser.role == 'manager':
         # we need office_id to track windows
-        office_manager = Office.objects.filter(users=customuser).exclude(ref='guest').first()
+        # fix when manager first sign up it belongs to office guest 
+        # we must delete the exclude function on filter
+        office_manager = Office.objects.filter(users=customuser).first()
         windows_office = Window.objects.filter(office_id=office_manager.ref)
     elif hasattr(customuser, 'role') and  customuser.role == 'agent':
         # we need agent_id and office_id for service counter 
