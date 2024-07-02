@@ -48,7 +48,8 @@
             >
                 update
             </button>
-            <button type="button" class="btn btn-outline-danger me-2 mb-2">
+            <button type="button" class="btn btn-outline-danger me-2 mb-2" 
+            data-bs-toggle="modal" data-bs-target="#deleteAgent{{ agent.id}}">
                 Delete
             </button>
             {% endif %}
@@ -85,6 +86,36 @@
             </div>
             </div>
         </div>
+        <!-- start Modal delete agent -->
+        <!-- Modal -->
+        <div class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        id="deleteAgent{{ agent.id }}"
+        >
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Do you confirm the deletion of this agent ?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p> Agent id   :  {{ agent.id }} </p>
+                    <p> Agent  username :  {{ agent.username }} </p>
+                    <p id="response-delete-agent{{ agent.id }}"></p>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary"
+                data-office-ref="{{ agent.office_id }}"
+                data-agent-id="{{ agent.id}}"
+                onclick="deleteAgent(this)"
+                >
+                Yes
+                </button>
+                </div>
+            </div>
+            </div>
+        </div>
+        <!--end delete agent -->
     {% endfor %}
 </div>
 {% endblock %}

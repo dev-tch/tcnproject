@@ -179,9 +179,11 @@ def deleteOffice(request, ref_office):
         # we detect problem if we delete office the account of manager was deleted
         # we must reassign manager account to office guest 
         guest_office, _ = Office.objects.get_or_create(ref='guest')
-        CustomUser.objects.filter(office=office).update(office=guest_office)
+        CustomUser.objects.filter(id=request.user.id).update(office=guest_office)
+        # delete the agents associated with this office 
+        CustomUser.objects.filter(office=office, role='agent').delete()
+        # delete the office 
         office.delete()
-        office.save()
     except Office.DoesNotExist:  
         return Response({"error": f"office {ref_office} not found"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
     except Exception as e:  
@@ -189,3 +191,25 @@ def deleteOffice(request, ref_office):
 
     json_data = {"message": "office was deleted successfully"}
     return Response(json_data, status=restHttpCodes.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def deleteAgent(request, ref_office, agent_id):
+    # check authorization 
+    if request.user.office_id != ref_office:
+        return Response({"error": "You are not the manager of this office"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    if request.user.role != 'manager':
+        return Response({"error": "Only managers can perform this action"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    try:
+        office = Office.objects.get(pk=ref_office)
+        agent = CustomUser.objects.get(pk=agent_id, role='agent', office=office)
+        agent.delete()
+    except Office.DoesNotExist:
+         return Response({"error": "Office not found"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "Agent not found or does not belong to your office"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
+    except Exception as e:  
+        return Response({"error": str(e)}, status=restHttpCodes.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    return Response({"message": "Agent deleted successfully"}, status=restHttpCodes.HTTP_200_OK)

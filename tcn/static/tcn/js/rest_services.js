@@ -99,6 +99,35 @@ function deleteOffice(buttonConfirmDeleteOffice) {
         });
     }
 }
+// delete agent : only manager in office can perform this action
+function deleteAgent(buttonConfirmDeleteAgent) {
+    // api 
+    // api/offices/<str:ref_office>/agents/<int:agent_id>/delete/
+    if (buttonConfirmDeleteAgent !== undefined && buttonConfirmDeleteAgent !== null)
+    {
+        const agent_id =  buttonConfirmDeleteAgent.getAttribute('data-agent-id')
+        const ref_office = buttonConfirmDeleteAgent.getAttribute('data-office-ref')
+
+        const responseElement = $(`#response-delete-agent${agent_id}`)
+        const  postdata = {ref_office : ref_office}
+        console.log(postdata)
+        const url = `/tcn/api/offices/${ref_office}/agents/${agent_id}/delete`;
+        axios.delete(url, postdata)
+        .then(function (response) {
+            
+            if (responseElement !== undefined && responseElement !== null) {
+                styleResponseTag(responseElement, feedback.error, feedback.success , response.data.message);
+            }
+            
+        })
+        .catch(function (error) {
+            if (responseElement !== undefined && responseElement !== null) {
+                styleResponseTag(responseElement, feedback.success, feedback.error , error.response.data.error);
+            }
+            console.error('Error deleteAgent:', error);
+        });
+    }
+}
 //helper function to clear the response server in <p> tag 
 function clearOldData(){
     if (dialog_assign_window) {

@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/windows/<int:number_window>/assign-agent/', views_api.assign_agent_to_window, name='apiWindowAssignAgent'),
     path('api/offices/<str:ref_office>/increment-counter/', views_api.increment_counter, name='incrementCounter'),
     path('api/offices/<int:id_user>/<str:action>/apply', views_api.apply_notify_with_action, name='officesNotifications'),
-    path('api/offices/<str:ref_office>/delete', views_api.deleteOffice, name='officesNotifications')
+    path('api/offices/<str:ref_office>/delete', views_api.deleteOffice, name='deleteOffice'),
+    path('api/offices/<str:ref_office>/agents/<int:agent_id>/delete/', views_api.deleteAgent, name='deleteAgent')
 ]
