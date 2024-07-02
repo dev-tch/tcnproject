@@ -15,7 +15,8 @@ urlpatterns = [
     path("manager/offices/", views.ListOffices.as_view(), name="listOffices"),
     path("manager/agents/", views.ListAgents.as_view(), name="listAgents"),
     path("client/trackedOffices/", views.ListTrackedOffices.as_view(), name='listTrackedOffices'),
-    path('manager/offices/<str:ref_office>/update/', views.UpdateOfficeView.as_view(), name='updateOfficeForm')
+    path('manager/offices/<str:ref_office>/update/', views.UpdateOfficeView.as_view(), name='updateOfficeForm'),
+    path('manager/agents/<int:agent_id>/update/', views.UpdateAgentView.as_view(), name='updateAgentForm')
    ,
     # api section 
     path('api/status/', views_api.status, name='apiStatus'),

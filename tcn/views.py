@@ -1,7 +1,7 @@
 #from django.contrib.auth.forms import UserCreationForm
 from django.db.models import F, Case, When, IntegerField
 from .forms import CustomUserCreationForm
-from .manager_forms import OfficeCreationForm, OfficeUpdateForm
+from .manager_forms import OfficeCreationForm, OfficeUpdateForm, AgentUpdateForm
 from django.urls import reverse_lazy
 #from django.views.generic import CreateView
 from django.views.generic.edit import FormView
@@ -10,6 +10,7 @@ from .models import Office, CustomUser, Window
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
+
 
 #class SignUpView(CreateView):
 class SignUpView(FormView):
@@ -186,4 +187,57 @@ class UpdateOfficeView(FormView):
 
     def get_success_url(self):
         return reverse_lazy('tcn:listOffices')
-  
+
+    #update agent ( manager has the ability to do this action )
+    # update office module
+class UpdateAgentView(FormView):
+    #form_class = UserCreationForm
+    form_class = AgentUpdateForm
+    template_name = "tcn/update_agent.html"
+
+    # check authorization method 
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the connected user is a manager and if their office matches the 'ref_office' parameter
+        agent_instance = self.get_agent_to_update()
+        
+        if not (request.user.role == 'manager' and request.user.office_id == agent_instance.office_id):
+            raise PermissionDenied("You are not authorized to update this Agent.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_agent_to_update(self):
+        # access parameters 'agent_id' included in the URL
+        agent_id = self.kwargs.get('agent_id')
+        return get_object_or_404(CustomUser, id=agent_id)
+    
+    def get_initial(self):
+        # get the initial object form
+        initial = super().get_initial()
+        # init the form from database based on agent_id
+        agent_instance = self.get_agent_to_update()
+        initial.update({
+            'username': agent_instance.username,
+            'first_name': agent_instance.first_name,
+            'last_name': agent_instance.last_name,
+            'email': agent_instance.email,
+            'national_id': agent_instance.national_id,
+        })
+        return initial
+
+    def form_valid(self, form):
+        agent_to_update = self.get_agent_to_update()
+        agent_to_update.username = form.cleaned_data['username']
+        agent_to_update.first_name = form.cleaned_data['first_name']
+        agent_to_update.last_name = form.cleaned_data['last_name']
+        agent_to_update.email = form.cleaned_data['email']
+        agent_to_update.national_id = form.cleaned_data['national_id']
+        agent_to_update.save()
+        return super().form_valid(form) 
+    
+    def get_form_kwargs(self):
+        # Override this method to pass the instance to the form
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.get_agent_to_update()
+        return kwargs
+    
+    def get_success_url(self):
+        return reverse_lazy('tcn:listAgents')

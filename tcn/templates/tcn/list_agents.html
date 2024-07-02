@@ -42,8 +42,15 @@
             >
             Assign to Window
             </button>
-            <a href="#link" class="btn btn btn-outline-warning me-2 mb-2" role="button">update</a>
-            <button type="button" class="btn btn-outline-danger me-2 mb-2">Delete</button>
+            
+            <button type="button" class="btn btn btn-outline-warning me-2 mb-2" onclick="updateAgent(this)"
+            data-agent-id="{{ agent.id}}"
+            >
+                update
+            </button>
+            <button type="button" class="btn btn-outline-danger me-2 mb-2">
+                Delete
+            </button>
             {% endif %}
             </div>
         </div>
@@ -80,5 +87,17 @@
         </div>
     {% endfor %}
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    function updateAgent(buttonUpdateAgent) {
+        if (buttonUpdateAgent !== undefined && buttonUpdateAgent !== null) {
+            const agent_id = buttonUpdateAgent.getAttribute('data-agent-id');
+            const updateUrl = `/tcn/manager/agents/${agent_id}/update/`;
+            // Redirect to the update URL directly
+            window.location.href = updateUrl;
+        }
+    }
+</script>
 {% endblock %}
 
