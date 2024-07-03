@@ -4,6 +4,52 @@
 {% block content %}
 {% if not user.is_authenticated %}
     <h1>Welcome to TicketCounterNotify please login or signup</h1>
+    <div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="{% static 'tcn/images/ticketcounter.PNG' %}" class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-caption d-none d-md-block text-bg-dark p-3">
+            <h5>track office counter </h5>
+            <p>don't waste your time and get real time notification about the current counter</p>
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'tcn/images/search_office.PNG' %}" class="d-block w-100" alt="search add office">
+            <div class="carousel-caption d-none d-md-block text-bg-dark p-3">
+                <h5>search office </h5>
+                <p>Search for an office and select it to display in your tracked offices</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'tcn/images/office.PNG' %}" class="d-block w-100" alt="create office with agents">
+            <div class="carousel-caption d-none d-md-block text-bg-dark p-3">
+                <h5>Create Office with Agents</h5>
+                <p>Manage your office and agents efficiently with our system.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'tcn/images/window.PNG' %}" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block text-bg-dark p-3">
+                <h5>Track the productivity of office agents </h5>
+                <p>view number of tickets served by each window</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
 {% endif %}
 
 {% if user.is_authenticated and user.role == 'agent' %}
