@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from os import path
+from dotenv import load_dotenv
+from os import path, getenv
+# Load environment variables from .env file
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,6 +23,14 @@ LOGIN_REDIRECT_URL = "tcn:home"
 LOGOUT_REDIRECT_URL = "tcn:login"
 AUTH_USER_MODEL = 'tcn.CustomUser'
 
+#================== config smtp server 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = getenv('EMAIL_HOST', '')
+EMAIL_PORT = int(getenv('EMAIL_PORT'))
+EMAIL_USE_TLS = bool(getenv('EMAIL_USE_TLS'))
+EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+
 # ============== < start my custom my config ASGI  > =============
 # Django Channels configuration
 ASGI_APPLICATION = 'tcnproject.asgi.application'
@@ -27,7 +38,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.pubsub.RedisPubSubChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],  # Adjust host and port as necessary
+            'hosts': [(getenv('REDIS_HOST'), int(getenv('REDIS_PORT')))],  # Adjust host and port as necessary
         },
     },
 }
@@ -108,12 +119,12 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tcn_db',  # Replace with your database name
-        'USER': 'root',  # Replace with your database user
-        'PASSWORD': '',  # Replace with your database password
-        'HOST': 'localhost',  # Replace with your database host, e.g., 'localhost' or an IP address
-        'PORT': '3306',  # Replace with your database port (default is 3306)
+        'ENGINE': getenv('DB_ENGINE'),
+        'NAME': getenv('DB_NAME'),  # Replace with your database name
+        'USER': getenv('DB_USER'),  # Replace with your database user
+        'PASSWORD': getenv('DB_PASSWORD', ''),  # Replace with your database password
+        'HOST':  getenv('DB_HOST'),  # Replace with your database host, e.g., 'localhost' or an IP address
+        'PORT': getenv('DB_PORT'),  # Replace with your database port (default is 3306)
     }
 }
 

@@ -1,6 +1,8 @@
 from django.urls import path
 from django.views.generic.base import TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 from . import views
 from . import views_api
 app_name = "tcn"
@@ -18,6 +20,8 @@ urlpatterns = [
     path('manager/offices/<str:ref_office>/update/', views.UpdateOfficeView.as_view(), name='updateOfficeForm'),
     path('manager/agents/<int:agent_id>/update/', views.UpdateAgentView.as_view(), name='updateAgentForm')
    ,
+   # reset password
+    path('password_reset', auth_views.PasswordResetView.as_view(template_name='registration/reset_pwd_page.html'), name='password_reset'),
     # api section 
     path('api/status/', views_api.status, name='apiStatus'),
     path('api/windows/<int:number_window>/assign-agent/', views_api.assign_agent_to_window, name='apiWindowAssignAgent'),
