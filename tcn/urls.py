@@ -28,5 +28,6 @@ urlpatterns = [
     path('api/offices/<str:ref_office>/increment-counter/', views_api.increment_counter, name='incrementCounter'),
     path('api/offices/<int:id_user>/<str:action>/apply', views_api.apply_notify_with_action, name='officesNotifications'),
     path('api/offices/<str:ref_office>/delete', views_api.deleteOffice, name='deleteOffice'),
-    path('api/offices/<str:ref_office>/agents/<int:agent_id>/delete/', views_api.deleteAgent, name='deleteAgent')
+    path('api/offices/<str:ref_office>/agents/<int:agent_id>/delete/', views_api.deleteAgent, name='deleteAgent'),
+     path('api/offices/<str:ref_office>/resetcounters', views_api.resetCounters, name='resetCounters')
 ]

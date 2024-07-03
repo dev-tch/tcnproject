@@ -38,6 +38,8 @@
                 update
             </button>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteOffice{{ office.ref }}">Delete</button>
+            <hr class="mt-1 mb-1"/>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetcounters{{ office.ref }}">Reset counters</button>
             {% endif %}
             </div>
         </div>
@@ -69,6 +71,35 @@
             </div>
         </div>
         <!--end delete office -->
+         <!-- start Modal reset counters Office -->
+         <!-- Modal -->
+         <div class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+         id="resetcounters{{ office.ref }}"
+         >
+             <div class="modal-dialog">
+             <div class="modal-content">
+                 <div class="modal-header">
+                 <h1 class="modal-title fs-5" id="exampleModalLabel">Do you confirm the reset of counters ?</h1>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                 </div>
+                 <div class="modal-body">
+                     <p>  counter office will be set to zero</p>
+                     <p>  number of tickets served  by each window wille be set to zero</p>
+                     <p id="response-reset-counters{{ office.ref }}"></p>
+                 </div>
+                 <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                 <button type="button" class="btn btn-primary"
+                 data-office-ref="{{ office.ref }}"
+                 onclick="resetCounters(this)"
+                 >
+                 Yes
+                 </button>
+                 </div>
+             </div>
+             </div>
+         </div>
+         <!--end reset counters office -->
     {% endfor %}
 </div>
 {% endblock %}

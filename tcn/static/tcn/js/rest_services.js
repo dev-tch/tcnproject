@@ -128,6 +128,31 @@ function deleteAgent(buttonConfirmDeleteAgent) {
         });
     }
 }
+// reset counters of office 
+function resetCounters(buttonConfirmResetCounters) {
+    // api 
+    // api/offices/<str:ref_office>/agents/<int:agent_id>/delete/
+    if (buttonConfirmResetCounters !== undefined && buttonConfirmResetCounters !== null)
+    {
+        const ref_office = buttonConfirmResetCounters.getAttribute('data-office-ref')
+        const responseElement = $(`#response-reset-counters${ref_office}`)
+        const url = `/tcn/api/offices/${ref_office}/resetcounters`;
+        axios.post(url)
+        .then(function (response) {
+            
+            if (responseElement !== undefined && responseElement !== null) {
+                styleResponseTag(responseElement, feedback.error, feedback.success , response.data.message);
+            }
+            
+        })
+        .catch(function (error) {
+            if (responseElement !== undefined && responseElement !== null) {
+                styleResponseTag(responseElement, feedback.success, feedback.error , error.response.data.error);
+            }
+            console.error('Error deleteAgent:', error);
+        });
+    }
+}
 //helper function to clear the response server in <p> tag 
 function clearOldData(){
     if (dialog_assign_window) {

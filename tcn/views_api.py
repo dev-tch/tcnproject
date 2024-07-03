@@ -206,10 +206,30 @@ def deleteAgent(request, ref_office, agent_id):
         agent = CustomUser.objects.get(pk=agent_id, role='agent', office=office)
         agent.delete()
     except Office.DoesNotExist:
-         return Response({"error": "Office not found"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
+        return Response({"error": "Office not found"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
     except CustomUser.DoesNotExist:
         return Response({"error": "Agent not found or does not belong to your office"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
     except Exception as e:  
         return Response({"error": str(e)}, status=restHttpCodes.HTTP_500_INTERNAL_SERVER_ERROR)
     
     return Response({"message": "Agent deleted successfully"}, status=restHttpCodes.HTTP_200_OK)
+
+@api_view(['POST'])
+def resetCounters(request, ref_office):
+    # check authorization 
+    if request.user.office_id != ref_office:
+        return Response({"error": "You are not the manager of this office"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    
+    if request.user.role != 'manager':
+        return Response({"error": "Only managers can perform this action"}, status=restHttpCodes.HTTP_403_FORBIDDEN)
+    # check existence office 
+    try:
+        office = Office.objects.get(pk=ref_office)
+        office.counter = 0
+        office.save()
+        Window.objects.filter(office=office).update(number_of_served_tickets=0)
+    except Office.DoesNotExist: 
+        return Response({"error": "Office not found"}, status=restHttpCodes.HTTP_404_NOT_FOUND)
+    except Exception as e:  
+        return Response({"error": str(e)}, status=restHttpCodes.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({"message": "Counters reset successfully"}, status=restHttpCodes.HTTP_200_OK)
