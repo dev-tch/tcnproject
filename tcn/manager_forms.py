@@ -10,7 +10,7 @@ class OfficeCreationForm(forms.ModelForm):
 class OfficeUpdateForm(forms.ModelForm):
     class Meta:
         model = Office
-        fields = ['name', 'country', 'state', 'region', 'address' , 'number_of_windows']
+        fields = ['name', 'country', 'state', 'region', 'address' , 'number_of_windows', 'counter']
 
 class AgentUpdateForm(forms.ModelForm):
     class Meta:

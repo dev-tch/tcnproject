@@ -177,6 +177,7 @@ class UpdateOfficeView(FormView):
             'region': office_instance.region,
             'address': office_instance.address,
             'number_of_windows': office_instance.number_of_windows,
+            'counter': office_instance.counter,
         })
         return initial
 
@@ -188,6 +189,7 @@ class UpdateOfficeView(FormView):
         office_to_update.region = form.cleaned_data['region']
         office_to_update.address = form.cleaned_data['address']
         office_to_update.number_of_windows = form.cleaned_data['number_of_windows']
+        office_to_update.counter = form.cleaned_data['counter']
         office_to_update.save()
         return super().form_valid(form)
 
