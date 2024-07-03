@@ -16,7 +16,7 @@ from django.core.exceptions import PermissionDenied
 class SignUpView(FormView):
     #form_class = UserCreationForm
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy("tcn:login")
+    #success_url = reverse_lazy("tcn:login")
     template_name = "tcn/registration/signup.html"
     
     def get_form_kwargs(self):
@@ -27,6 +27,12 @@ class SignUpView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+    def get_success_url(self):
+        if self.request.user.is_authenticated and self.request.user.role == 'manager':
+            return reverse_lazy('tcn:listAgents')
+        else:
+            return reverse_lazy('tcn:login')
 
 #class CreateOfficeView
 class CreateOfficeView(FormView):
