@@ -1,4 +1,5 @@
 {% extends "tcn/base.html" %}
+{% load static %}
 {% block title %}Home{% endblock %}
 {% block content %}
 {% if not user.is_authenticated %}
@@ -22,18 +23,73 @@
             </div>
         </div>
         <div class="row">
-          <div class="col-sm">
+            <div class="col-sm">
             <button 
+            id = "agentinc"
             data-agent-id   = "{{ agent_user.id}}"
             data-office-id  = "{{ agent_office.ref }}"
             data-window-num = "{{ agent_window.number_window }}"
             onclick="incrementCounter(this)">Increment Counter
             </button>
-          </div>
-          <div class="col-sm">
+            </div>
+            <div class="col-sm">
             <h1 id = "counter-display-agent" style="background-color:powderblue; text-align: center;">{{agent_office.counter}}</h1>
-          </div>
+            </div>
         </div>
+        <br>
+        <h2> config key combination to increment</h2>
+        <div class="container">
+            <!-- Row 1 -->
+            <div class="row mb-3">
+                <div class="col-sm-4">
+                    <select class="form-select" aria-label="Default select example" id="combselct1">
+                        <option selected>Key combination one</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                        <label class="form-check-label" for="flexCheckChecked1">
+                            Check box to use this key
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="row mb-3">
+                <div class="col-sm-4">
+                    <select class="form-select" aria-label="Default select example" id="combselct2">
+                        <option selected>Key combination two</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                        <label class="form-check-label" for="flexCheckChecked2">
+                            Check box to use this key
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="row mb-3">
+                <div class="col-sm-4">
+                    <select class="form-select" aria-label="Default select example" id="combselct3">
+                        <option selected>Key combination three</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                        <label class="form-check-label" for="flexCheckChecked3">
+                            Check box to use this key
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>                   
     </div>
 
     <!-- 
@@ -251,7 +307,7 @@
                         return;
                     }
                 } );
-            });
+            });    
         </script>
     {% endif %}
     <!-- 
@@ -259,4 +315,12 @@
     end javscript  for user client
     ======================================================================
     -->
+    <!-- 
+    ======================================================================
+    start  javscript  for user agent
+    ======================================================================
+    -->
+    {% if user.is_authenticated and user.role == "agent" %}
+        <script src="{% static 'tcn/js/config_key.js' %}" ></script>
+    {% endif %}
 {% endblock %}
