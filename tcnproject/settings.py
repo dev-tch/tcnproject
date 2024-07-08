@@ -62,7 +62,7 @@ SECRET_KEY = 'django-insecure-v3s5c82n9@7z0$@y-*7x3dpyf!5)ppsv1k0i+(8s9xyyf52!4t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'test-deploy-3to3.onrender.com'] # config CORS
 
 
 # Application definition
@@ -70,6 +70,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'tcn',  # Your app,
     'channels', 
+    'corsheaders', # config CORS
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -82,14 +83,22 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-     "whitenoise.middleware.WhiteNoiseMiddleware",  #for config whitenose 
+    'whitenoise.middleware.WhiteNoiseMiddleware',  #for config whitenose 
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # config CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# config CORS 
+CSRF_TRUSTED_ORIGINS = ['https://test-deploy-3to3.onrender.com', 'http://localhost:8000'] 
+CORS_ALLOWED_ORIGINS = ['https://test-deploy-3to3.onrender.com', 'http://localhost:8000']
+from corsheaders.defaults import default_headers, default_methods
+CORS_ALLOW_HEADERS = list(default_headers) + ['X-Requested-With', 'X-CSRFToken']
+CORS_ALLOW_METHODS = list(default_methods) + ['GET', 'POST', 'DELETE', 'OPTIONS']
 
 ROOT_URLCONF = 'tcnproject.urls'
 
