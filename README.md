@@ -1,39 +1,76 @@
-## creation  project and application  
+# TicketCounterNotify
 
-- django-admin startproject tcnproject
+## Table of Contents
+1. [Project Description](#project-description)
+2. [Features](#features)
+3. [Technologies Used](#technologies-used)
+4. [Setup and Installation](#setup-and-installation)
 
-- python manage.py startapp tcn
+## Project Description
+**TicketCounterNotify** is a web-based application that allows users in a queue to receive real-time updates on the counters of selected offices. This helps them track the progress. The application also enables managers to monitor the number of tickets served at each window in the office. Additionally, it provides an interface for agents to increment the counter.
 
-## commit description (TCH 25/06/2024) 
-name commit: add module authentication for users of the application
+## Features
+- User Authentication: Account creation, login, logout, and password reset via email.
+- Role-Based Access: Different functionalities for managers, agents, and clients.
+- Office Management: Managers can create, update, delete, and reset office counters.
+- Agent Management: Assign agents to specific office windows.
+- Real-Time Tracking: Real-time updates of counter statuses for clients.
+- WebSocket Integration: Real-time communication for counter updates.
+- Search and Selection: Users can search for offices and track their counters.
 
-setting.py
-- config database credentials
-- add tcn app  INSTALLED_APPS
-- config LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL, AUTH_USER_MODEL and STATIC_URL
+## Technologies Used
+- **Backend**: Django, Django REST framework, Channels, Channels Redis
+- **Frontend**: Bootstrap,  jQuery, Axios
+- **Database**: PostgreSQL or MySQL
+- **Messaging**: Redis
+- **Deployment**: Render
 
-tcn/templates/tcn:
-- /registration/login.html : template for login
-- /registration/signup : template for signup
-- base.html  : generic template extendet by other templates
-- home.html :home page for each authenticated users
-
-tcn/static/tcn
-- add static files like images
-
-tcn/forms.html
-- add  the class the controller from validation and creation
-
-- tcn/urls.py : add urls paths used by application
-
-tcn/views
-
-- process request and map it to some template
-tcnproject/tcn/urls.py
-- include the urls used by the app
-
-run migration to save the model into the configured database
-
--  tcn/migrations/0001_initial.py
-
-
+## Setup and Installation
+1. **Install MySQL server and start the service:**
+   ```sh
+   sudo apt install mysql-server
+   sudo service mysql start 
+2. **Install Redis server and start the service:**   
+   ```sh
+   sudo apt install redis
+   sudo service redis start 
+3. **Clone the repository:**
+   ```sh
+   git clone https://github.com/dev-tch/tcnproject.git
+   cd tcnproject 
+  4. **Install virtualenv, activate it, and install requirements:**
+		```sh
+		pip install virtualenv 
+		virtualenv .venv
+		source .venv/bin/activate
+		pip install -r requirements.txt
+ 5. **Create a `.env` file and configure all the environment variables:**
+	 ```sh
+	 #config database credentials
+	DB_ENGINE=django.db.backends.mysql
+	DB_NAME=tcn_db
+	DB_USER=***
+	DB_PASSWORD=***
+	DB_HOST=localhost
+	DB_PORT=3306
+	#config gmail smpt server
+	EMAIL_HOST=smtp.gmail.com
+	EMAIL_PORT=587
+	EMAIL_USE_TLS=true
+	EMAIL_HOST_USER=***
+	EMAIL_HOST_PASSWORD=***
+	#config redis credentials
+	REDIS_HOST=localhost
+	REDIS_PORT=6379
+	# Replace *** with your credentials (MySQL, Gmail)
+ 6. **Make migrations and run migrate to create tables in the database:**
+	  ```sh
+	  sudo python manage.py makemigrations tcn
+	  sudo python manage.py migrate
+ 7. **Run Daphne ASGI server to serve your HTTP and WebSocket requests:**
+	   ```sh
+	   sudo daphne -b 0.0.0.0 -p 8000 tcnproject.asgi:application
+  
+  8. **Open your browser and navigate to the home page:**
+	   ```sh
+	   http://localhost:8000
