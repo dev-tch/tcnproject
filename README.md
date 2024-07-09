@@ -112,3 +112,37 @@ This API endpoint allows an authenticated manager to assign an agent user to a s
   "message": "Agent assigned to existing window successfully"
 }
 ```
+
+$${\color{red}Api<2> \space \color{blue}increment  \space Counter \space By \space Agent }$$
+
+POST /api/offices/<str:ref_office>/increment-counter/
+
+This API endpoint allows an authenticated Agent, assigned to a specific window within an office, to increment the office's counter
+
+> Body Parameters
+
+```json
+{
+  "agent_id": 12345,
+  "number_window": 1
+}
+```
+
+### Params
+
+|Name|Location|Type|Required|Description|
+|---|---|---|---|---|
+|Cookie|header|string| yes |require the user to be authenticated|
+|body|body|object| yes |json data|
+|» agent_id|body|integer| yes |the unique id of agent user|
+|» number_window|body|integer| yes |the unique number of window |
+
+> Response Examples
+
+> Success
+
+```json
+{
+  "counter": 80
+}
+```
