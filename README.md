@@ -146,3 +146,36 @@ This API endpoint allows an authenticated Agent, assigned to a specific window w
   "counter": 80
 }
 ```
+
+$${\color{red}Api<3> \space \color{blue}enable  \space or  \space disable  \space tracking \space offices }$$
+
+POST /api/offices/<int:id_user>/<str:action>/apply
+
+This API endpoint allows an authenticated client to enable or disable tracking of an office counter
+
+> Body Parameters
+
+```json
+{
+   "ref_offices": ["ref01", "ref02", "ref03"]
+}
+```
+
+### Params
+
+|Name|Location|Type|Required|Description|
+|---|---|---|---|---|
+|action|query|string| yes |the value must be 'enable' or 'disable'|
+|Cookie|header|string| yes |require the user to be authenticated|
+|body|body|object| yes |json data|
+|» ref_offices|body|array[string]| yes |Arrays of references to offices|
+
+> Response Examples
+
+> Success
+
+```json
+{
+  "message": "enable notifications for offices applied successfully"
+}
+```
